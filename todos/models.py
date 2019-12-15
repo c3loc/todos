@@ -1,4 +1,4 @@
-from todos import db, app, mail
+from .todos import db, app, mail
 
 from flask import flash, Markup, url_for
 
@@ -14,7 +14,7 @@ import json
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     login = db.Column(db.String, nullable=False)
-    todos = db.relationship('Todo', backref='user', lazy='dynamic')
+    todos = db.relationship('Todo', backref='user', lazy='dynamic', foreign_keys='Todo.user_id')
 
     def create_token(self):
         s = Serializer(app.config['SECRET_KEY'])
@@ -60,6 +60,7 @@ class Todo(db.Model):
     state = db.Column(db.Text)
     priority = db.Column(db.Integer)
     updates = db.relationship('Update', backref='todo', lazy='dynamic')
+    assignee = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=True)
 
     ''' Zukunftsmusik
     not_before = db.Column(db.Date)
